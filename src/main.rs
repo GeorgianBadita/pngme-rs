@@ -26,9 +26,9 @@ fn main() -> anyhow::Result<()> {
         Commands::Decode { file_path, chunk_type } => {
             let chunk_type_bytes = chunk_type.bytes();
             let chunk_str = std::str::from_utf8(&chunk_type_bytes).unwrap();
-            let file_content = fs::read_to_string(&file_path)?;
+            let file_content = fs::read_to_string(file_path)?;
             let png = Png::try_from(file_content.as_bytes())?;
-            let chunk_with_message = png.chunk_by_type(&chunk_str);
+            let chunk_with_message = png.chunk_by_type(chunk_str);
             if let Some(message) = chunk_with_message {
                 println!("Message: {}", message.data_as_string()?);
             } else {
@@ -38,13 +38,13 @@ fn main() -> anyhow::Result<()> {
         Commands::Remove { file_path, chunk_type } => {
             let chunk_type_bytes = chunk_type.bytes();
             let chunk_str = std::str::from_utf8(&chunk_type_bytes).unwrap();
-            let file_content = fs::read_to_string(&file_path)?;
+            let file_content = fs::read_to_string(file_path)?;
             let mut png = Png::try_from(file_content.as_bytes())?;
-            let chunk = png.remove_chunk(&chunk_str)?;
+            let chunk = png.remove_chunk(chunk_str)?;
             println!("Removed message: {}", chunk.data_as_string()?);
         }
         Commands::Print { file_path } => {
-            let file_content = fs::read_to_string(&file_path)?;
+            let file_content = fs::read_to_string(file_path)?;
             let png = Png::try_from(file_content.as_bytes())?;
             png.chunks().iter().for_each(|chunk|
                 println!(

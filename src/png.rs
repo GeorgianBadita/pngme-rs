@@ -83,7 +83,7 @@ impl TryFrom<&[u8]> for Png {
     type Error = anyhow::Error;
 
     fn try_from(value: &[u8]) -> anyhow::Result<Self> {
-        let value = value.into_iter().map(|x| *x).collect::<Vec<u8>>();
+        let value = value.to_vec();
         let header_bytes = value.get(..8).ok_or(PngError::InvalidHeaderLength)?;
         if header_bytes != Png::STANDARD_HEADER {
             bail!(PngError::InvalidHeaderContent);

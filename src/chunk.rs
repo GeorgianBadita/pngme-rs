@@ -88,7 +88,7 @@ impl TryFrom<&[u8]> for Chunk {
     type Error = anyhow::Error;
 
     fn try_from(value: &[u8]) -> anyhow::Result<Self> {
-        let value = value.into_iter().map(|x| *x).collect::<Vec<u8>>();
+        let value = value.to_vec();
         // First 4 bytes specifying the data length
         let length_bytes = value.get(0..4).ok_or(ChunkError::InvalidLength)?;
         // Next 4 bytes specifying chunk type

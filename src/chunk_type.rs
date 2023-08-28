@@ -34,19 +34,19 @@ impl ChunkType {
     }
 
     fn is_critical(&self) -> bool {
-        return self.nth_byte(0).unwrap() & (1 << 5) == 0;
+        self.nth_byte(0).unwrap() & (1 << 5) == 0
     }
 
     fn is_public(&self) -> bool {
-        return self.nth_byte(1).unwrap() & (1 << 5) == 0;
+        self.nth_byte(1).unwrap() & (1 << 5) == 0
     }
 
     fn is_reserved_bit_valid(&self) -> bool {
-        return self.nth_byte(2).unwrap() & (1 << 5) == 0;
+        self.nth_byte(2).unwrap() & (1 << 5) == 0
     }
 
     fn is_safe_to_copy(&self) -> bool {
-        return self.nth_byte(3).unwrap() & (1 << 5) != 0;
+        self.nth_byte(3).unwrap() & (1 << 5) != 0
     }
 
     pub(crate) fn is_valid(&self) -> bool {
@@ -57,12 +57,12 @@ impl ChunkType {
         if idx > 4 {
             bail!("Missing attribute: {}", 1);
         }
-        return Ok((self.num >> (24 - idx * 8)) as u8);
+        Ok((self.num >> (24 - idx * 8)) as u8)
     }
 
     fn verify_and_map_byte(byte: u8) -> anyhow::Result<u32> {
         let ch = byte as char;
-        if ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') {
+        if ch.is_ascii_lowercase() || ch.is_ascii_uppercase() {
             return Ok(byte as u32);
         }
         bail!(ChunkTypeError::InvalidChunkByte(byte));
