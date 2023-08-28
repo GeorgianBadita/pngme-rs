@@ -13,8 +13,8 @@ pub enum ChunkTypeError {
     InvalidChunkByte(u8),
 }
 
-#[derive(PartialEq, Debug, Eq)]
-pub(crate) struct ChunkType {
+#[derive(PartialEq, Debug, Eq, Clone)]
+pub struct ChunkType {
     num: u32,
 }
 

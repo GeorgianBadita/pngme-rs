@@ -8,7 +8,7 @@ use crate::chunk::{Chunk, ChunkError};
 use crate::chunk_type::ChunkType;
 
 #[derive(Error, Debug)]
-enum PngError {
+pub enum PngError {
     #[error("Chunk of type {0} could not be found")]
     ChunkTypeNotFound(String),
     #[error("Expected 8 bytes for header length, less were provided")]
@@ -19,7 +19,7 @@ enum PngError {
     InvalidChunkLength,
 }
 
-struct Png {
+pub struct Png {
     chunks: Vec<Chunk>,
 }
 
@@ -32,11 +32,11 @@ impl Png {
         }
     }
 
-    fn append_chunk(&mut self, chunk: Chunk) {
+    pub fn append_chunk(&mut self, chunk: Chunk) {
         self.chunks.push(chunk)
     }
 
-    fn remove_chunk(&mut self, chunk_type: &str) -> anyhow::Result<Chunk> {
+    pub fn remove_chunk(&mut self, chunk_type: &str) -> anyhow::Result<Chunk> {
         let chunk_type = ChunkType::from_str(chunk_type)?;
         let idx = self.chunks
             .iter()
@@ -55,11 +55,11 @@ impl Png {
         &Png::STANDARD_HEADER
     }
 
-    fn chunks(&self) -> &[Chunk] {
+    pub fn chunks(&self) -> &[Chunk] {
         &self.chunks
     }
 
-    fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
+    pub fn chunk_by_type(&self, chunk_type: &str) -> Option<&Chunk> {
         let chunk_type = ChunkType::from_str(chunk_type);
         if chunk_type.is_err() {
             return None;
@@ -68,7 +68,7 @@ impl Png {
         self.chunks.iter().find(|chunk| *chunk.chunk_type() == chunk_type_res)
     }
 
-    fn as_bytes(&self) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Vec<u8> {
         let chunks_bytes: Vec<u8> = self.chunks.iter()
             .flat_map(|chunk| chunk.as_bytes())
             .collect();
@@ -92,7 +92,7 @@ impl TryFrom<&[u8]> for Png {
         let mut chunks = Vec::new();
         let mut start_idx = 8;
         while start_idx < value.len() {
-            let length_bytes = value.get(start_idx..start_idx + 4).ok_or(ChunkError::InvalidLength)?;
+            let length_bytes = value.get(start_idx..start_idx + 4).ok_or(PngError::InvalidChunkLength)?;
             let length_u32: Vec<u32> = length_bytes.iter().map(|x| *x as u32).collect();
             let length = (length_u32[0] << 24) | (length_u32[1] << 16) | (length_u32[2] << 8) | length_u32[3];
 

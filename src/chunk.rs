@@ -22,14 +22,14 @@ pub enum ChunkError {
     CrcMismatch(u32, u32),
 }
 
-pub(crate) struct Chunk {
+pub struct Chunk {
     length: u32,
     data: Vec<u8>,
     chunk_type: ChunkType,
 }
 
 impl Chunk {
-    pub(crate) fn new(chunk_type: ChunkType, data: Vec<u8>) -> Self {
+    pub fn new(chunk_type: ChunkType, data: Vec<u8>) -> Self {
         Chunk {
             chunk_type,
             length: data.len() as u32,
@@ -37,19 +37,19 @@ impl Chunk {
         }
     }
 
-    pub(crate) fn length(&self) -> u32 {
+    pub fn length(&self) -> u32 {
         self.length
     }
 
-    pub(crate) fn chunk_type(&self) -> &ChunkType {
+    pub fn chunk_type(&self) -> &ChunkType {
         &self.chunk_type
     }
 
-    pub(crate) fn data(&self) -> &[u8] {
+    pub fn data(&self) -> &[u8] {
         &self.data
     }
 
-    pub(crate) fn crc(&self) -> u32 {
+    pub fn crc(&self) -> u32 {
         let bytes: Vec<u8> = self.chunk_type
             .bytes()
             .iter()
@@ -60,12 +60,12 @@ impl Chunk {
         crc_alg.checksum(&bytes)
     }
 
-    pub(crate) fn data_as_string(&self) -> anyhow::Result<String> {
+    pub fn data_as_string(&self) -> anyhow::Result<String> {
         let s = std::str::from_utf8(&self.data)?;
         Ok(s.to_string())
     }
 
-    pub(crate) fn as_bytes(&self) -> Vec<u8> {
+    pub fn as_bytes(&self) -> Vec<u8> {
         self.length.
             to_be_bytes()
             .iter()
