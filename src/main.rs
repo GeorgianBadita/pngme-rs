@@ -16,8 +16,8 @@ fn main() -> anyhow::Result<()> {
 
     match cli.command {
         Commands::Encode { file_path, chunk_type, message, output_file } => {
-            let file_content = fs::read_to_string(&file_path)?;
-            let mut png = Png::try_from(file_content.as_bytes())?;
+            let content = fs::read(&file_path)?;
+            let mut png = Png::try_from(content.as_slice())?;
             let chunk = Chunk::new(chunk_type, message.as_bytes().to_vec());
             png.append_chunk(chunk);
             let out_file = output_file.unwrap_or(file_path);
@@ -26,8 +26,8 @@ fn main() -> anyhow::Result<()> {
         Commands::Decode { file_path, chunk_type } => {
             let chunk_type_bytes = chunk_type.bytes();
             let chunk_str = std::str::from_utf8(&chunk_type_bytes).unwrap();
-            let file_content = fs::read_to_string(file_path)?;
-            let png = Png::try_from(file_content.as_bytes())?;
+            let content = fs::read(&file_path)?;
+            let png = Png::try_from(content.as_slice())?;
             let chunk_with_message = png.chunk_by_type(chunk_str);
             if let Some(message) = chunk_with_message {
                 println!("Message: {}", message.data_as_string()?);
@@ -38,20 +38,20 @@ fn main() -> anyhow::Result<()> {
         Commands::Remove { file_path, chunk_type } => {
             let chunk_type_bytes = chunk_type.bytes();
             let chunk_str = std::str::from_utf8(&chunk_type_bytes).unwrap();
-            let file_content = fs::read_to_string(file_path)?;
-            let mut png = Png::try_from(file_content.as_bytes())?;
+            let content = fs::read(&file_path)?;
+            let mut png = Png::try_from(content.as_slice())?;
             let chunk = png.remove_chunk(chunk_str)?;
+            fs::write(file_path, png.as_bytes())?;
             println!("Removed message: {}", chunk.data_as_string()?);
         }
         Commands::Print { file_path } => {
-            let file_content = fs::read_to_string(file_path)?;
-            let png = Png::try_from(file_content.as_bytes())?;
+            let content = fs::read(&file_path)?;
+            let png = Png::try_from(content.as_slice())?;
             png.chunks().iter().for_each(|chunk|
                 println!(
-                "{}\n-----------", chunk
-            ));
+                    "{}\n-----------", chunk
+                ));
         }
     }
-
     Ok(())
 }

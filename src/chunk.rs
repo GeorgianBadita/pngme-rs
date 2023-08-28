@@ -80,7 +80,7 @@ impl Chunk {
 impl Display for Chunk {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         write!(f, "Length: {}, Chunk type: {}, Data: {}, Crc: {}",
-               self.length, self.chunk_type, self.data_as_string().unwrap(), self.crc())
+               self.length, self.chunk_type, self.data_as_string().unwrap_or(Default::default()), self.crc())
     }
 }
 
